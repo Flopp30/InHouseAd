@@ -44,7 +44,7 @@ https://ru.wikipedia.org/wiki/Nintendo_3DS
 - Python 3.11
 Библиотеки:
   - beautifulsoup4==4.11.2
-  - requests==2.28.2
+  - aiohttp==3.8.4
 
 <hr>
 
@@ -54,5 +54,7 @@ https://ru.wikipedia.org/wiki/Nintendo_3DS
 2) Склонировать на локальную машину
 3) В корне проекта:
 ```
+python3 -m venv venv && source venv/bin/activate
+pip install --upgrade pip && pip install -r requirements.txt
 python3 main.py
 ```
