@@ -104,7 +104,7 @@ def main():
     if path is None:
         logger.info("Путь не найден :(")
     else:
-        print('Найден путь до страницы:')
+        print(f'Найден путь c {start_url} до {end_url}:')
         for i, (text, url) in enumerate(path):
             print(f"{i + 1}--------------------------\n"
                   f"{text}\n{url}")
