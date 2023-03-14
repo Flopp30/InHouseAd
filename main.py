@@ -62,7 +62,7 @@ async def get_page(session: aiohttp.ClientSession, url: str, path: Optional[list
         return r_text, path
 
 
-# TODO вопросы по этой работе этой функции
+# TODO вопросы по работе этой функции
 async def find_path(session, start_url, end_url) -> Optional[list]:
     '''
     Принимает стартовый адрес и искомый, ищет путь между ними
@@ -88,7 +88,8 @@ async def find_path(session, start_url, end_url) -> Optional[list]:
                 task = asyncio.create_task(get_page(session, url, path))
                 tasks.append(task)
 
-        pages = await asyncio.gather(*tasks)
+            pages = await asyncio.gather(*tasks)  # <-- если выполнение задач
+            # вынести из внутреннего цикла, то работает в разы быстрее, но бьёт ошибки по незакрытым сессиям
         if pages:
             for page in pages:
                 page, path = page
@@ -100,7 +101,7 @@ async def find_path(session, start_url, end_url) -> Optional[list]:
                         visited.add(next_url)
                         next_path = path + [(next_text, URL_DOMAIN + next_url)]
                         urls.append((next_url, next_path))
-    return None
+    return None  # <-- Никогда не возвращает None здесь при валидных данных:(
 
 
 async def main():
