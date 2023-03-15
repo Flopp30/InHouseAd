@@ -8,7 +8,8 @@ HEADERS = {
 }
 
 # Parser params
-SEARCH_ID = 'bodyContent'  # Блок, в котором ищем <p> и <a>
+SEARCH_ID = 'bodyContent'  # Блок, в котором ищем ссылки
+MAX_SEARCH_DEPTH = 3  # Глубина поиска (количество кликов для перехода)
 URL_DOMAIN = 'https://ru.wikipedia.org'
 
 # Logger
