@@ -1,10 +1,8 @@
 import asyncio
 import re
-import time
 from typing import Optional
 
 import aiohttp
-import requests
 from bs4 import BeautifulSoup, Tag
 
 from settings import logger, SEARCH_ID, URL_DOMAIN, HEADERS
@@ -80,16 +78,11 @@ async def find_path(session, start_url, end_url) -> Optional[list]:
             url, path = urls.pop(0)
             if url.startswith('/wiki/'):
                 url = URL_DOMAIN + url
-            if url == end_url:
-                return path
-            if len(path) >= 3:
-                continue
-            if url not in visited:
-                task = asyncio.create_task(get_page(session, url, path))
-                tasks.append(task)
+            task = asyncio.create_task(get_page(session, url, path))
+            tasks.append(task)
 
-            pages = await asyncio.gather(*tasks)  # <-- если выполнение задач
-            # вынести из внутреннего цикла, то работает в разы быстрее, но бьёт ошибки по незакрытым сессиям
+        pages = await asyncio.gather(*tasks)
+
         if pages:
             for page in pages:
                 page, path = page
@@ -100,12 +93,16 @@ async def find_path(session, start_url, end_url) -> Optional[list]:
                     if next_url not in visited:
                         visited.add(next_url)
                         next_path = path + [(next_text, URL_DOMAIN + next_url)]
+                        if len(next_path) >= 3:
+                            continue
                         urls.append((next_url, next_path))
+                        if URL_DOMAIN + next_url == end_url:
+                            return next_path
     return None  # <-- Никогда не возвращает None здесь при валидных данных:(
 
 
 async def main():
-    start_url, end_url = 'https://ru.wikipedia.org/wiki/Xbox_360_S', 'https://ru.wikipedia.org/wiki/Nintendo_3DS'
+    start_url, end_url = 'https://ru.wikipedia.org/wiki/Xbox_360_S', 'https://ru.wikipedia.org/wiki/'
 
     if not start_url.startswith(URL_DOMAIN) \
             or not end_url.startswith(URL_DOMAIN):
