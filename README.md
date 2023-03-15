@@ -68,7 +68,7 @@ https://ru.wikipedia.org/wiki/Nintendo_3DS
 <hr>
 
 ### Стэк
-- Python 3.11
+- Python 3.11 <br>
 Библиотеки:
   - beautifulsoup4==4.11.2
   - aiohttp==3.8.4
