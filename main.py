@@ -12,7 +12,7 @@ TOTAL_PAGE_COUNTER = 0
 TOTAL_VISITED_PAGE_COUNTER = 0
 
 
-def get_sentence_for_link(a_tag: Tag) -> str:
+async def get_sentence_for_link(a_tag: Tag) -> str:
     '''
     Возвращает предложение в теге-родители, где упоминается данная ссылка
     :param a_tag: <a> tag
@@ -31,7 +31,7 @@ def get_sentence_for_link(a_tag: Tag) -> str:
     return a_text
 
 
-def get_links_text(text: str) -> dict:
+async def get_links_text(text: str) -> dict:
     '''
     Ищет все ссылки и текст вокруг них из блоков <p> внутри контейнера с ID = SEARCH_ID (см. settings.py).
     Выбирает только валидные (url начинает с "/wiki" )
@@ -47,7 +47,7 @@ def get_links_text(text: str) -> dict:
         for a_tag in tag.find_all('a', href=True):
             if not a_tag['href'].startswith('/wiki'):
                 continue
-            a_text = get_sentence_for_link(a_tag)
+            a_text = await get_sentence_for_link(a_tag)
             res.update({a_tag['href']: a_text})
 
     return res
@@ -70,7 +70,7 @@ async def get_page(session: aiohttp.ClientSession, url: str, path: Optional[list
         return r_text, path
 
 
-def create_tasks(session: aiohttp.ClientSession, urls: deque):
+async def create_tasks(session: aiohttp.ClientSession, urls: deque):
     '''
     Создает список задач и возвращает его.
     :param session: aiohttp.ClientSession
@@ -102,12 +102,12 @@ async def find_path(session, start_url, end_url) -> Optional[list]:
     visited = set()
     while urls:
 
-        tasks = create_tasks(session, urls)
-        pages = await asyncio.gather(*tasks)
+        tasks = await create_tasks(session, urls)
+        pages = await asyncio.gather(*tasks, return_exceptions=True)
 
         for page in pages:
             page, path = page
-            links_text = get_links_text(page)
+            links_text = await get_links_text(page)
             for next_url, next_text in links_text.items():
                 TOTAL_PAGE_COUNTER += 1
                 if next_url not in visited:
