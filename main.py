@@ -58,7 +58,7 @@ async def get_page(session: aiohttp.ClientSession, url: str, path: Optional[list
     Отправляет запрос по указанному адресу, возвращает html код страницы
     :param session: aiohttp.ClientSession
     :param url: url address
-    :param path: использую для общей логики, чтобы данные по пути запроса были привязаны к странице
+    :param path: использую для общей логики, чтобы путь запроса был привязан к странице
     :return: (response.text, path)
     '''
     global TOTAL_VISITED_PAGE_COUNTER
@@ -103,10 +103,10 @@ async def find_path(session, start_url, end_url) -> Optional[list]:
     while urls:
 
         tasks = await create_tasks(session, urls)
-        pages = await asyncio.gather(*tasks, return_exceptions=True)
+        pages_with_paths = await asyncio.gather(*tasks, return_exceptions=True)
 
-        for page in pages:
-            page, path = page
+        for page_with_path in pages_with_paths:
+            page, path = page_with_path
             links_text = await get_links_text(page)
             for next_url, next_text in links_text.items():
                 TOTAL_PAGE_COUNTER += 1
